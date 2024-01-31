@@ -34,7 +34,7 @@ module.exports = {
   // create a new user
   async createUser(req, res) {
     try {
-      const user = await User.create(req.body).populate('thoughts');
+      const user = await User.create(req.body);
       res.json(user);
     } catch (err) {
       res.status(500).json(err);
@@ -60,12 +60,9 @@ module.exports = {
   async deleteUser(req, res) {
     try {
       const user = await User.findOneAndDelete(req.params.id);
-      const thought = await Thought.findOneAndUpdate(
-        {_id: req.body.thoughtId}, { $pull: { users: user._id } }, { new: true }
-      );
 
       if (!user) {
-        return res.status(404).json({ user, thought });
+        return res.status(404).json({ message: 'No such user exists' });
       }
 
       res.json({ message: 'User successfully deleted' });
